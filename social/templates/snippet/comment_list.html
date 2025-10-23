@@ -1,0 +1,20 @@
+{% load humanize %}
+
+<div class="video-details">
+      <div class="channel-picture">
+      <a href="{% url 'profile' comment.author.username %}"><img src="{{comment.author.profile.picture.url}}" alt="{{comment.author}}'s Profile" ></a>
+      </div>
+
+      <div class="metadata">
+      <p class="video-title">{% if comment.author.first_name %} {{comment.author.first_name}} {{comment.author.last_name}} {% else %} {{comment.author}} {% endif %}</p>
+      <p class="channel-name">{{comment.comment}} 
+      </p>
+                       
+        <p class="channel-name"><i id="icon" class="far fa-clock"></i>{{comment.created_at|naturaltime}} &bull;  
+            <span id="comment_like-{{comment.comment_id}}">
+                {% include 'snippet/comment_like.html' %}
+            </span>
+        
+        </p>        
+      </div>
+</div> <hr style="width: 90%; margin: 10px auto;"/>
