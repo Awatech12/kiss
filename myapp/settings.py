@@ -32,8 +32,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'social', 
     'django.contrib.humanize',
+    'social', 
+    
 ]
 
 ASGI_APPLICATION = 'myapp.asgi.application'
