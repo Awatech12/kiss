@@ -303,34 +303,19 @@
 {% include 'snippet/post_like.html' %}
 
 </article>
-<span id="comment_list">
-  {% for comment in comments %}
-
-      {% include 'snippet/comment_list.html' with comment=comment %}
-    
-  {% empty %}
-<h2>No comment yet</h2>
-{% endfor %}
-  </span>
 
 <div class="card post-form" id="myForm">
-    <h3 style="margin-bottom:10px; font-size: 16px; font-weight: 600; color: var(--text-dark);">Comment:</h3>
-    <form id="postForm"
-    hx-post="{% url 'postcomment' post.post_id %}" 
-    hx-target="#comment_list"
-    hx-encoding="multipart/form-data"
-    hx-on::after-request="this.reset()"
-    hx-swap="afterbegin"
+    <h3 style="margin-bottom:10px; font-size: 16px; font-weight: 600; color: var(--text-dark);">Edit:</h3>
+    <form id="postForm" method="post" enctype="multipart/form-data"
     >
       {% csrf_token %}
-      <input type="text" name="comment"  placeholder="Write a caption...">
+      <textarea name="comment" id="comment" > {{post.content}}</textarea>
       <div class="form-actions">
-        <label for="image" class="file-label">
+        <label for="images" class="file-label">
           <i class="fa-solid fa-camera"></i>
-          Add Photo
         </label>
-        <input type="file" id="image" name="image" multiple>
-        <button type="submit" class="btn btn-blue">Share</button>
+        <input type="file" id="images" name="images" multiple>
+        <button type="submit" class="btn btn-blue">Update</button>
       </div>
     </form>
   </div>

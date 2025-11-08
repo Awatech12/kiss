@@ -240,11 +240,11 @@
 
         <div class="profile-section">
             <img src="{{user.profile.picture.url}}" alt="Profile Picture" 
-                 class="profile-pic">
+                 class="profile-pic" id="profile_picture">
             
-            <a href="#" class="change-photo-link">
+            <label for="image" class="change-photo-link">
                 Change Profile Photo
-            </a>
+            </label>
             <p class="username-text">{{user.username}}</p>
         </div>
         
@@ -262,12 +262,8 @@
             {% csrf_token %}
 
             <div class="form-fields-wrapper">
-                
-                <div class="input-row">
-                    <label for="fname" class="profile-label">Profile Image</label>
                     <input type="file" name="image" id="image" 
-                           class="profile-input">
-                </div>
+                           class="profile-input" style="display: none;">
                 
 
                 <div class="input-row">
@@ -316,5 +312,22 @@
         </form>
 
     </main>
+
+    <script>
+       const image= document.getElementById('image');
+       const profile_picture = document.getElementById('profile_picture');
+        image.addEventListener('change', function(){
+            const file = this.files[0];
+            if(file){
+                const reader = new FileReader();
+                reader.onload = (e)=>{
+                    profile_picture.src = e.target.result;
+                    console.log(e.target.result)
+                }
+                reader.readAsDataURL(file);
+            }
+        })
+
+    </script>
 </body>
 </html>

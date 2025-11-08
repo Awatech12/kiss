@@ -8,13 +8,16 @@
       <div class="metadata">
       <p class="video-title">{% if comment.author.first_name %} {{comment.author.first_name}} {{comment.author.last_name}} {% else %} {{comment.author}} {% endif %}</p>
       <p class="channel-name">{{comment.comment}} 
+        {% if comment.image %}
+          <img src="{{comment.image.url}}" height="200" width="200" alt="">
+        {% endif %}
       </p>
                        
         <p class="channel-name"><i id="icon" class="far fa-clock"></i>{{comment.created_at|naturaltime}} &bull;  
             <span id="comment_like-{{comment.comment_id}}">
                 {% include 'snippet/comment_like.html' %}
             </span>
-        
+        <a href="{% url 'comment_reply' comment.comment_id %}"> <i id="icon" class="fa-regular fa-comment action-icon"></i></a>
         </p>        
       </div>
 </div> <hr style="width: 90%; margin: 10px auto;"/>

@@ -3,7 +3,7 @@ from django.contrib.auth.models import User, auth
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from social.models import Profile, Post, PostImage, PostComment, Message, Notification
+from social.models import Profile, Post, PostImage, PostComment, Message, Notification, ChannelMessage, Channel
 from django.db.models import Q
 from django.core.paginator import Paginator
 import time
@@ -94,6 +94,31 @@ def post(request):
 
     return render(request, 'post.html')
 
+login_required(login_url='/')
+def editpost(request, post_id):
+    post = get_object_or_404(Post, post_id=post_id, author=request.user)
+    image = PostImage.objects.filter(post=post)
+    if request.method =='POST':
+        content = request.POST.get('comment')
+        images = request.FILES.getlist('images')
+        if not content and not images:
+            return
+        post.content=content
+        post.save()
+        if images:
+            for m in images:
+                if image:
+                   for n in image:
+                        n.image=m
+                        n.save()
+                else:
+                    PostImage.objects.create(post=post, image=m)
+        return redirect(request.META.get('HTTP_REFERER'))
+    context = {
+        'post':post,
+        'post_id':post_id
+    }
+    return render(request, 'editpost.html', context)
         
 @login_required(login_url='/')
 def like_post(request, post_id):
@@ -123,8 +148,15 @@ def post_comment(request, post_id):
 def postcomment(request, post_id):
     post=get_object_or_404(Post, post_id=post_id)
     if request.method == 'POST':
-        comment = request.POST.get('comment')
-        comment=PostComment.objects.create(post=post, author=request.user, comment=comment)
+        content = request.POST.get('comment')
+        image = request.FILES.get('image')
+        if not content and not image:
+            return
+        comment=PostComment.objects.create(post=post, author=request.user, comment=content)
+        if image:
+            comment = PostComment.objects.create(post=post, author=request.user, comment=content, image=image)
+        if not content:
+             comment = PostComment.objects.create(post=post, author=request.user, image=image)
         if post.author != request.user:
             Notification.objects.create(
                 recipient=post.author,
@@ -142,7 +174,14 @@ def comment_like(request, comment_id):
         comment.like.add(request.user)
     return render(request, 'snippet/comment_like.html', {'comment':comment, 'comment_id':comment_id})
 
-
+@login_required(login_url='/')
+def comment_reply(request, comment_id):
+    comment = get_object_or_404(PostComment, comment_id=comment_id)
+    context = {
+        'comment': comment,
+        'comment_id': comment_id
+    }
+    return render(request, 'comment_reply.html', context)
 @login_required(login_url='/')
 def profile(request, username):
     user = get_object_or_404(User, username=username)
@@ -263,6 +302,35 @@ login_required(login_url='/')
 def notification_list(request):
     return render(request, 'notification.html')
 
+login_required(login_url='/')
+def channel_create(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        about = request.POST.get('about')
+        icon = request.FILES.get('icon')
+        if not name and not about and not icon:
+            return
+        channel=Channel.objects.create(channel_name=name, channel_owner=request.user, about=about, image=icon)
+        messages.info(request, 'Channel Created Successfully')
+        return redirect('channel_create')
+
+    channels = Channel.objects.all().order_by('?')
+    context = {
+        'channels': channels
+    }
+    return render(request, 'channel_create.html', context)
+
+login_required(login_url='/')
+def channel(request, channel_id):
+    channel = get_object_or_404(Channel, channel_id=channel_id)
+    messages = ChannelMessage.objects.filter(channel=channel)
+
+    context = {
+        'channel': channel,
+        'channel_id': channel_id,
+        'messages': messages
+    }
+    return render(request, 'channel.html', context)
 def error_404(request, exception):
     return render(request, '404.html', status=404)
 def logout(request):

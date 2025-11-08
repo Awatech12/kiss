@@ -253,86 +253,24 @@
 
 <main class="container">
  
-  <article class="card">
-<div class="post-header">
-<div class="post-user">
-<img src="{{post.author.profile.picture.url}}" onerror="this.onerror=null; this.src='https://placehold.co/40x40/cccccc/ffffff?text=P';" alt="{{post.author.username}}" class="profile-pic">
-<div class="user-details">
-<a href="{% url 'profile' post.author.username %}" class="username-link">{{post.author.first_name}} {{post.author.last_name}}</a>
-<div class="post-meta">
-@{{post.author.username}}· {{post.created_at|naturaltime}}
-</div>
-</div>
-</div>
-<i class="fa-solid fa-ellipsis" style="color:var(--text-muted); cursor:pointer;"></i>
-</div>
-<b class="post-title" style="color: #6a6a6a;">{{post.content}}</b>
-
-{% if post.images.all %}
-
-<div class="post-image-carousel" id="carousel-{{ post.post_id }}" data-current-slide="0" data-total-slides="{{ post.images.all|length }}">
-
-  <div class="slider-track" id="track-{{ post.post_id }}">
-    {% for p in post.images.all %}
-      <img src="{{p.image.url}}" onerror="this.onerror=null; this.src='https://placehold.co/600x400/999999/ffffff?text=KishiFace+Post';" alt="Post Image {{forloop.counter}}" class="post-image-slide">
-    {% empty %}
-    <img src="https://placehold.co/600x400/999999/ffffff?text=KishiFace" alt="No Post Image" class="post-image-slide">
-    {% endfor %}
-  </div>
-
-{% endif %}
-
-  {% if post.images.all|length > 1 %}
-  <div class="slide-nav">
-    <button id="prev-{{ post.post_id }}" onclick="slidePost('{{ post.post_id }}', -1)" class="hidden"><i class="fa-solid fa-chevron-left"></i></button>
-    <button id="next-{{ post.post_id }}" onclick="slidePost('{{ post.post_id }}', 1)"><i class="fa-solid fa-chevron-right"></i></button>
-  </div>
-
-  <div class="slider-indicators" id="indicators-{{ post.post_id }}">
-    {% for p in post.images.all %}
-    <div class="indicator-dot {% if forloop.first %}active{% endif %}"></div>
-    {% endfor %}
-  </div>
-  {% endif %}
-</div>
-
-<!-- 
-  NEW: We now include the single snippet that contains 
-  both the likers/count summary AND the action buttons.
--->
-{% include 'snippet/post_like.html' %}
-
-</article>
-<span id="comment_list">
-  {% for comment in comments %}
-
-      {% include 'snippet/comment_list.html' with comment=comment %}
-    
-  {% empty %}
-<h2>No comment yet</h2>
-{% endfor %}
-  </span>
-
-<div class="card post-form" id="myForm">
-    <h3 style="margin-bottom:10px; font-size: 16px; font-weight: 600; color: var(--text-dark);">Comment:</h3>
-    <form id="postForm"
-    hx-post="{% url 'postcomment' post.post_id %}" 
-    hx-target="#comment_list"
-    hx-encoding="multipart/form-data"
-    hx-on::after-request="this.reset()"
-    hx-swap="afterbegin"
-    >
-      {% csrf_token %}
-      <input type="text" name="comment"  placeholder="Write a caption...">
-      <div class="form-actions">
-        <label for="image" class="file-label">
-          <i class="fa-solid fa-camera"></i>
-          Add Photo
-        </label>
-        <input type="file" id="image" name="image" multiple>
-        <button type="submit" class="btn btn-blue">Share</button>
+  <div class="video-details">
+      <div class="channel-picture">
+      <a href="{% url 'profile' comment.author.username %}"><img src="{{comment.author.profile.picture.url}}" alt="{{comment.author}}'s Profile" ></a>
       </div>
-    </form>
+
+      <div class="metadata">
+      <p class="video-title">{% if comment.author.first_name %} {{comment.author.first_name}} {{comment.author.last_name}} {% else %} {{comment.author}} {% endif %}</p>
+      <p class="channel-name">{{comment.comment}} 
+      </p>
+                       
+        <p class="channel-name"><i id="icon" class="far fa-clock"></i>{{comment.created_at|naturaltime}} &bull;  
+            <span id="comment_like-{{comment.comment_id}}">
+                {% include 'snippet/comment_like.html' %}
+            </span>
+        <a href="{% url 'comment_reply' comment.comment_id %}"> <i id="icon" class="fa-regular fa-comment action-icon"></i></a>
+        </p>        
+      </div>
+</div> <hr style="width: 90%; margin: 10px auto;"/>
   </div>
 </main>
 

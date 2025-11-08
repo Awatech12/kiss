@@ -51,6 +51,7 @@ class PostComment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     comment = models.TextField()
+    image = models.ImageField(upload_to='comment_image/', blank=True)
     like = models.ManyToManyField(User, related_name='comment_likes', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -72,6 +73,27 @@ class Message(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
 
+
+class Channel(models.Model):
+    channel_id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    channel_owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='channel_author')
+    channel_name = models.CharField(max_length=200)
+    about = models.TextField()
+    subscriber = models.ManyToManyField(User, blank=True, related_name='channel_subscriber')
+    image=models.ImageField(upload_to='channel_image', default='male.png')
+    created_at = models.DateTimeField(auto_now_add=True)
+class ChannelMessage(models.Model):
+    channemessage_id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    channel = models.ForeignKey(Channel, on_delete=models.CASCADE, related_name='channel_messages')
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    pictureUrl = models.TextField(blank=True)
+    message = models.TextField()
+    like = models.ManyToManyField(User, blank=True, related_name='message_likers')
+    image = models.ImageField(upload_to='comment_image', blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def like_count(self):
+        return self.like.count()
 
 
 
