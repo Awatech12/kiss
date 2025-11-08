@@ -39,7 +39,10 @@ ASGI_APPLICATION = 'myapp.asgi.application'
 
 CHANNEL_LAYERS = {
     'default':{
-        'BACKEND': 'channels.layers.InMemoryChannelLayer'
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        "CONFIG":{
+            "host":["redis://red-d3uim9ali9vc73c5a3i0:6379"]
+        }
     }
 }
 
