@@ -150,13 +150,19 @@ def postcomment(request, post_id):
     if request.method == 'POST':
         content = request.POST.get('comment')
         image = request.FILES.get('image')
-        if not content and not image:
+        audio = request.FILES.get('audio_file')
+        if not content and not image and not audio:
             return
-        comment=PostComment.objects.create(post=post, author=request.user, comment=content)
-        if image:
+        if content and not image and not audio:
+            comment=PostComment.objects.create(post=post, author=request.user, comment=content)
+        if image and content:
             comment = PostComment.objects.create(post=post, author=request.user, comment=content, image=image)
-        if not content:
-             comment = PostComment.objects.create(post=post, author=request.user, image=image)
+        if not content and not image:
+            comment = PostComment.objects.create(post=post, author=request.user, file=audio)
+        if image and not content and not audio:
+            comment = PostComment.objects.create(post=post, author=request.user, image=image)
+        if image and audio:
+             comment = PostComment.objects.create(post=post, author=request.user, comment=content, image=image, file=audio )
         if post.author != request.user:
             Notification.objects.create(
                 recipient=post.author,
@@ -331,6 +337,13 @@ def channel(request, channel_id):
         'messages': messages
     }
     return render(request, 'channel.html', context)
+
+# ==== for Notification and inbox  updating =====
+def notification_partial(request):
+    return render(request, 'snippet/notification_count.html')
+
+def inbox_partial(request):
+    return render(request, 'snippet/inbox_count.html')
 def error_404(request, exception):
     return render(request, '404.html', status=404)
 def logout(request):

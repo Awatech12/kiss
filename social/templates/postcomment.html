@@ -199,7 +199,7 @@
             flex-direction: column;
             min-width: 0; 
         }
-
+        
         .video-title {
             font-size: 14px;
             font-weight: 500;
@@ -232,7 +232,95 @@
   margin:0 10px;
 }
 
+audio{
+  width: 100%;
+  outline: none;
+  background-color: #eef2f7;
+}
+audio::-webkit-media-controls-pannel{
+  background-color: #eef2f7;
+}
 
+button{
+  font-size: 24px;
+  border: none;
+  cursor: pointer;
+  margin: 8px;
+  background-color: #ffffff;
+  transform: color 0.3s ease;
+}
+button:hover{
+  color: #007bff;
+}
+
+/* Comment Style */
+
+.comment {
+      display: flex;
+      align-items: flex-start;
+      margin: 15px 0;
+      position: relative;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 10px;
+      object-fit: cover;
+    }
+
+    .comment-body {
+      background: #f2f3f5;
+      padding: 8px 12px;
+      border-radius: 12px;
+      position: relative;
+      width: 500px;
+    }
+
+    .username {
+      font-weight: bold;
+      color: #050505;
+      margin-bottom: 2px;
+      text-decoration: none;
+    }
+
+    .text {
+      margin: 0;
+      font-size: 14px;
+      color: #1c1e21;
+    }
+
+    .comment::before {
+      content: "";
+      position: absolute;
+      left: 20px;
+      top: 45px;
+      width: 2px;
+      height: calc(100% - 45px);
+      background-color: #d3d3d3;
+    }
+    .recording{
+      position: relative;
+      font-size: 20px;
+      color: #ff3b30;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse{
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50%{
+        transform: scale(1.3);
+        opacity: 0.5;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
   </style>
 </head>
 <body>
@@ -328,7 +416,8 @@
         <label for="image" class="file-label">
           <i class="fa-solid fa-camera"></i>
           Add Photo
-        </label>
+        </label> <button id="startBtn" type="button"><i class="fa-solid fa-microphone"></i></button> <span id="status"></span> <button id="stopBtn" type="button" hidden><i class="fa-solid fa-circle-stop"></i></button>
+        <input type="file" name="audio_file" id="audio_file" hidden>
         <input type="file" id="image" name="image" multiple>
         <button type="submit" class="btn btn-blue">Share</button>
       </div>
@@ -340,6 +429,49 @@
 
 
 <script>
+
+  /*** Recording Code */
+  let mediaRecord;
+  let audioChucks = [];
+  const startBtn = document.getElementById('startBtn');
+  const stopBtn = document.getElementById('stopBtn');
+  const audio_file = document.getElementById('audio_file');
+  const status = document.getElementById('status');
+  startBtn.addEventListener('click', async function(){
+    try{
+      const stream = await navigator.mediaDevices.getUserMedia({
+      audio:true
+    });
+    mediaRecord = new MediaRecorder(stream);
+    audioChucks = [];
+    mediaRecord.ondataavailable = event =>audioChucks.push(event.data);
+    mediaRecord.onstop = async () =>{
+      const bob = new Blob(audioChucks, {
+        type: 'audio/webm'
+      });
+      const file = new File([bob], 'recorded_audio.webm',{
+        type: 'audio/webm'
+      });
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(file);
+      audio_file.files = dataTransfer.files;
+    };
+    mediaRecord.start();
+    status.innerHTML = `<i class="fa-solid fa-circle recording"></i>`;
+    startBtn.hidden = true;
+    stopBtn.hidden = false;
+    }catch(err){
+      alert('MicroPhone acess denied')
+    }
+
+  })
+
+  stopBtn.onclick = () =>{
+    mediaRecord.stop();
+    status.textContent = 'Recording Stoped';
+    startBtn.hidden = false;
+    stopBtn.hidden = true;
+  }
   /**
    * Handles sliding of a post's image carousel.
    * (Original JavaScript is re-enabled to support the carousel HTML structure above)

@@ -15,18 +15,7 @@
 </head>
 <body>
 
-<header>
-  <h1>KishiFace</h1>
-  <div class="icon-group">
-    <a href="{% url 'notification_list' %}" style="text-decoration: none; position: relative;">
-        <i class="fa-regular fa-bell" style="cursor:pointer;"></i>
-        {% if notifications.count > 0 %}
-            <sup style="color: red; font-weight: bold; position: absolute; top: 0; right: -5px; font-size: 10px;">{{notifications.count}}</sup>
-        {% endif %}
-    </a>
-    <a href="{% url 'inbox' %}"><i class="fa-regular fa-paper-plane" style="cursor:pointer;"></i></a>
-  </div>
-</header>
+{% include 'header.html' %}
 
 <main class="container">
     
@@ -195,7 +184,7 @@
                                     </div>
                                     <div>
                                         <span class="member-username block">{{member.first_name}} {{member.last_name}}</span>
-                                        <span class="member-title block">@{{member.username}}</span>
+                                        <br><span class="member-title block">@{{member.username}}</span>
                                     </div>
                                 </a>
                                 <!-- Placeholder follow button -->

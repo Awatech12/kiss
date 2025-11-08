@@ -6,7 +6,7 @@ def unread_count_processor(request):
     else:
         unread_count = 0
     
-    return {'unread_count': unread_count}
+    return{'unread_count': unread_count}
 
 
 def information(request):

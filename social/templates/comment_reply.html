@@ -262,6 +262,16 @@
       <p class="video-title">{% if comment.author.first_name %} {{comment.author.first_name}} {{comment.author.last_name}} {% else %} {{comment.author}} {% endif %}</p>
       <p class="channel-name">{{comment.comment}} 
       </p>
+      {% if comment.image %}
+        <img src="{{ comment.image.url }}" alt="" style="width:200px; height:200px; border-radius:8px;">
+      {% endif %}
+
+      {% if comment.file %}
+        <audio controls>
+          <source src="{{ comment.file.url }}" type="audio/webm">
+        </audio>
+      {% endif %}
+
                        
         <p class="channel-name"><i id="icon" class="far fa-clock"></i>{{comment.created_at|naturaltime}} &bull;  
             <span id="comment_like-{{comment.comment_id}}">
