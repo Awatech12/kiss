@@ -5,8 +5,6 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
 from channels.sessions import SessionMiddlewareStack
 from social import routing
-
-
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'myapp.settings')
 
 application = ProtocolTypeRouter({
